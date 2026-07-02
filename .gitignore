@@ -1,0 +1,16 @@
+.vscode
+.vs
+.venv
+.DS_Store
+*.a
+*.so
+*.lib
+*.dll
+config.h
+build*/
+html/
+__pycache__
+.ruff_cache/
+.cache/
+.agents/
+cloned/

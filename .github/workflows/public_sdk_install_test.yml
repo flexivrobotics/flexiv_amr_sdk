@@ -1,0 +1,127 @@
+name: Public SDK Install Test
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  public-sdk-install-test:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: ubuntu-22.04
+            os: ubuntu-22.04
+            install_prefix: $HOME/flexiv_amr_sdk_install
+
+          - name: ubuntu-24.04
+            os: ubuntu-24.04
+            install_prefix: $HOME/flexiv_amr_sdk_install
+
+          - name: macos-14
+            os: macos-14
+            install_prefix: $HOME/flexiv_amr_sdk_install
+
+          - name: windows-2022
+            os: windows-2022
+            install_prefix: $USERPROFILE/flexiv_amr_sdk_install
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up CMake
+        uses: jwlawson/actions-setup-cmake@v2
+        with:
+          cmake-version: "3.28.3"
+
+      - name: Build and install dependencies
+        shell: bash
+        run: |
+          cmake --version
+          bash thirdparty/build_and_install_dependencies.sh "${{ matrix.install_prefix }}" 4
+
+      - name: Configure public SDK
+        shell: bash
+        run: |
+          cmake -S . -B build \
+            -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" \
+            -DCMAKE_INSTALL_PREFIX="${{ matrix.install_prefix }}" \
+            -DCMAKE_PREFIX_PATH="${{ matrix.install_prefix }}"
+
+      - name: Build public SDK wrapper
+        shell: bash
+        run: |
+          cmake --build build \
+            --config "${BUILD_TYPE}" \
+            --parallel 4
+
+      - name: Install public SDK wrapper
+        shell: bash
+        run: |
+          cmake --install build \
+            --config "${BUILD_TYPE}"
+
+      - name: Build examples against installed SDK
+        shell: bash
+        run: |
+          cmake -S example -B example/build \
+            -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" \
+            -DCMAKE_PREFIX_PATH="${{ matrix.install_prefix }}"
+
+          cmake --build example/build \
+            --config "${BUILD_TYPE}" \
+            --parallel 4
+
+      - name: Verify find_package from downstream project
+        shell: bash
+        run: |
+          mkdir -p downstream
+
+          cat > downstream/CMakeLists.txt <<'EOF'
+          cmake_minimum_required(VERSION 3.20)
+
+          project(flexiv_amr_downstream_test
+              LANGUAGES CXX
+          )
+
+          find_package(flexiv_amr_sdk REQUIRED)
+
+          add_executable(flexiv_amr_downstream_test
+              main.cpp
+          )
+
+          target_link_libraries(flexiv_amr_downstream_test
+              PRIVATE
+                  flexiv::flexiv_amr
+          )
+
+          target_compile_features(flexiv_amr_downstream_test
+              PRIVATE
+                  cxx_std_17
+          )
+          EOF
+
+          cat > downstream/main.cpp <<'EOF'
+          #include <flexiv/amr/amr.h>
+
+          int main() {
+              return 0;
+          }
+          EOF
+
+          cmake -S downstream -B downstream/build \
+            -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" \
+            -DCMAKE_PREFIX_PATH="${{ matrix.install_prefix }}"
+
+          cmake --build downstream/build \
+            --config "${BUILD_TYPE}" \
+            --parallel 4
