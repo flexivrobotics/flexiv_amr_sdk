@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.20)
 
 project(flexiv_amr_sdk
-    VERSION 0.1.8
+    VERSION 0.2.0
     DESCRIPTION "Flexiv AMR SDK"
     LANGUAGES CXX
 )
@@ -66,6 +66,7 @@ file(DOWNLOAD
     "${FLEXIV_AMR_LIB_URL}"
     "${CMAKE_CURRENT_BINARY_DIR}/${FLEXIV_AMR_LIB}"
     SHOW_PROGRESS
+    TIMEOUT 60
     TLS_VERIFY ON
     EXPECTED_HASH SHA256=${EXPECTED_HASH}
     STATUS download_status
