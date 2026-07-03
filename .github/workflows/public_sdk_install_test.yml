@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       release_tag:
-        description: "Release tag to test, for example v0.1.6"
+        description: "Release tag to test, for example v0.1.8"
         required: true
         type: string
 
@@ -43,6 +43,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.release_tag }}
 
       - name: Set up CMake
         uses: jwlawson/actions-setup-cmake@v2
@@ -62,7 +64,8 @@ jobs:
           cmake -S . -B build \
             -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" \
             -DCMAKE_INSTALL_PREFIX="${{ matrix.install_prefix }}" \
-            -DCMAKE_PREFIX_PATH="${{ matrix.install_prefix }}"
+            -DCMAKE_PREFIX_PATH="${{ matrix.install_prefix }}" \
+            -DFLEXIV_AMR_SDK_RELEASE_TAG="${{ inputs.release_tag }}"
 
       - name: Build public SDK wrapper
         shell: bash

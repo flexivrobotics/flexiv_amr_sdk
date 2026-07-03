@@ -1,10 +1,20 @@
 cmake_minimum_required(VERSION 3.20)
 
 project(flexiv_amr_sdk
-    VERSION 1.0.0
+    VERSION 0.1.8
     DESCRIPTION "Flexiv AMR SDK"
     LANGUAGES CXX
 )
+
+set(FLEXIV_AMR_SDK_RELEASE_TAG "" CACHE STRING
+    "Flexiv AMR SDK release tag used to download prebuilt libraries"
+)
+
+if(FLEXIV_AMR_SDK_RELEASE_TAG STREQUAL "")
+    set(FLEXIV_AMR_SDK_RELEASE_TAG "v${PROJECT_VERSION}")
+endif()
+
+message(STATUS "Flexiv AMR SDK release tag: ${FLEXIV_AMR_SDK_RELEASE_TAG}")
 
 set(FLEXIV_AMR_TARGET_NAME flexiv_amr)
 
@@ -47,7 +57,7 @@ file(READ "${CMAKE_CURRENT_SOURCE_DIR}/lib/${FLEXIV_AMR_LIB}.sha256" EXPECTED_HA
 string(STRIP "${EXPECTED_HASH}" EXPECTED_HASH)
 
 set(FLEXIV_AMR_LIB_URL
-    "https://github.com/zlin-flexiv/flexiv_amr_sdk/releases/download/v${PROJECT_VERSION}/${FLEXIV_AMR_LIB}"
+    "https://github.com/zlin-flexiv/flexiv_amr_sdk/releases/download/${FLEXIV_AMR_SDK_RELEASE_TAG}/${FLEXIV_AMR_LIB}"
 )
 
 message(STATUS "Downloading ${FLEXIV_AMR_LIB_URL} ...")
