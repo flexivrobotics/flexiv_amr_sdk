@@ -113,6 +113,13 @@ class SeerAmrClient {
     SeerBatteryStatus GetBatteryStatus();
 
     /**
+     * @brief Query motor runtime status (robot_status_motor_req, 1040).
+     * @param motor_names Names to query; empty means query all motors and omit the JSON body.
+     * @return One status item per motor in the response motor_info array.
+     */
+    std::vector<SeerMotorStatus> GetMotorStatus(const std::vector<std::string>& motor_names = {});
+
+    /**
      * @brief Get current physical and software emergency-stop status.
      * @return Emergency-stop, motor-driver, and relay states.
      */

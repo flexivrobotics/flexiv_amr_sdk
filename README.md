@@ -10,8 +10,6 @@ This repository is the public binary distribution of Flexiv AMR SDK. It contains
 
 ## References
 
-- [Flexiv AMR SDK API Documentation](https://flexiv-amr-sdk-doc.netlify.app/) is the main API reference. 
-
 - [Flexiv AMR SDK Releases](https://github.com/flexivrobotics/flexiv_amr_sdk/releases) is the main place to download prebuilt C++ static libraries and Python wheels. The instructions below serve as a quick reference.
 
 ## Environment Compatibility

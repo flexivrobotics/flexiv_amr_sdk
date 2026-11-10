@@ -248,6 +248,60 @@ struct SeerBatteryStatus {
 };
 
 /**
+ * @brief One motor's runtime status returned by robot_status_motor_res (11040).
+ * @note All fields except motor_name may be absent.
+ */
+struct SeerMotorStatus {
+    /** Motor name (required in each motor_info entry). */
+    std::string motor_name;
+
+    /** Motor type: 0 WALK, 1 SPEED, 2 SPIN, 3 LINEAR, 4 ROTATION, 5 DO. */
+    int type;
+
+    /** CAN router mapped to canPort in the model file. */
+    int can_router;
+
+    /** CAN ID mapped to canId in the model file. */
+    int can_id;
+
+    /** Position in m (LINEAR) or rad (steer/spin/rotation). */
+    double position;
+
+    /** Speed in m/s (LINEAR) or rad/s (steer/spin/rotation). */
+    double speed;
+
+    /** Current in A. */
+    double current;
+
+    /** Voltage in V. */
+    double voltage;
+
+    /** True if normally stopped; false otherwise. */
+    bool stop = false;
+
+    /** Error code. */
+    int error_code;
+
+    /** Whether the motor reports an error. */
+    bool err = false;
+
+    /** True if emergency stop is active; requires manual reset. */
+    bool emc = false;
+
+    /** Temperature. */
+    double temperature;
+
+    /** Encode value. */
+    double encoder;
+
+    /** True if passive motor (feedback only, no actuation). */
+    bool passive = false;
+
+    /** True if zero calibration is complete. */
+    bool calib = false;
+};
+
+/**
  * @brief Physical, motor-driver, relay, and software emergency-stop status.
  * @details Returned by SeerAmrClient::GetEmergencyStatus(). Applications read these values after
  * the SDK parses the SEER status response.

@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       release_tag:
-        description: "Release tag to test, for example v1.0.0"
+        description: "Release tag to test, for example v1.0.1"
         required: true
         type: string
 
@@ -32,8 +32,8 @@ jobs:
             os: ubuntu-24.04
             install_prefix: $HOME/flexiv_amr_sdk_install
 
-          - name: macos-14
-            os: macos-14
+          - name: macos-15
+            os: macos-15
             install_prefix: $HOME/flexiv_amr_sdk_install
 
           - name: windows-2022
